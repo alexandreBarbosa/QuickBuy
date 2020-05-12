@@ -1,11 +1,7 @@
 {
-  "Cheve": "ValorChave",
+
   "ConnectionString": {
     "SqlServerConnection": "",
     "QuickBuyDB": "server=localhost;uid=root;pwd=Spark*4510;database=QuickBuyDB"
   }
 }
-
-
-
-"server=127.0.0.1;uid=root;pwd=12345;database=test"
