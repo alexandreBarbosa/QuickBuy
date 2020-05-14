@@ -7,7 +7,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using QuickBuy.Dominio.Contratos;
 using QuickBuy.Repositorio.Contexto;
+using QuickBuy.Repositorio.Repositorios;
 
 namespace QuickBuy.Web
 {
@@ -33,6 +35,7 @@ namespace QuickBuy.Web
                 .UseMySql("server=localhost;uid=root;pwd=Spark*4510;database=QuickBuyDB", m =>
                      m.MigrationsAssembly("QuickBuy.Repositorio")));
 
+            services.AddScoped<IProdutoRepositorio, ProdutoRepositorio>();
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
@@ -64,6 +67,8 @@ namespace QuickBuy.Web
                     name: "default",
                     template: "{controller}/{action=Index}/{id?}");
             });
+
+            
 
             app.UseSpa(spa =>
             {
