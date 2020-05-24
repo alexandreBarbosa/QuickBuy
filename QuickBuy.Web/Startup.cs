@@ -34,13 +34,18 @@ namespace QuickBuy.Web
                 option.UseLazyLoadingProxies()
                 .UseMySql("server=localhost;uid=root;pwd=Spark*4510;database=QuickBuyDB", m =>
                      m.MigrationsAssembly("QuickBuy.Repositorio")));
+            //todo - incluir no arquivo de configuração
+
 
             services.AddScoped<IProdutoRepositorio, ProdutoRepositorio>();
-            // In production, the Angular files will be served from this directory
+            services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
+                
+                // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp/dist";
             });
+            services.AddCors();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -60,6 +65,12 @@ namespace QuickBuy.Web
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
+            
+            //todo - verificar necessidade e segurança
+            app.UseCors(options =>
+                options.WithOrigins("http://localhost:4200")
+                .AllowAnyMethod()
+                   .AllowAnyHeader());
 
             app.UseMvc(routes =>
             {
@@ -79,8 +90,8 @@ namespace QuickBuy.Web
 
                 if (env.IsDevelopment())
                 {
-                    //spa.UseAngularCliServer(npmScript: "start");
-                    spa.UseProxyToSpaDevelopmentServer("http://localhost:4200/");
+                    spa.UseAngularCliServer(npmScript: "start");
+                    //spa.UseProxyToSpaDevelopmentServer("http://localhost:4200/");
                 }
             });
         }
