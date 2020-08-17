@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var lojaCarrinhoCompras = /** @class */ (function () {
-    function lojaCarrinhoCompras() {
+var LojaCarrinhoCompras = /** @class */ (function () {
+    function LojaCarrinhoCompras() {
         this.produtos = [];
     }
-    lojaCarrinhoCompras.prototype.adicionar = function (produto) {
+    LojaCarrinhoCompras.prototype.adicionar = function (produto) {
         var produtoLocaStorage = localStorage.getItem("produtoLocaStorage");
         if (!produtoLocaStorage) {
             // se não existir nada dentro do localStorage
@@ -17,13 +17,14 @@ var lojaCarrinhoCompras = /** @class */ (function () {
         }
         localStorage.setItem("produtoLocaStorage", JSON.stringify(this.produtos));
     };
-    lojaCarrinhoCompras.prototype.obterProdutos = function () {
+    LojaCarrinhoCompras.prototype.obterProdutos = function () {
         var produtoLocaStorage = localStorage.getItem("produtoLocaStorage");
         if (produtoLocaStorage) {
             return JSON.parse(produtoLocaStorage);
         }
+        return this.produtos;
     };
-    lojaCarrinhoCompras.prototype.removerProduto = function (produto) {
+    LojaCarrinhoCompras.prototype.removerProduto = function (produto) {
         var produtoLocaStorage = localStorage.getItem("produtoLocaStorage");
         if (produtoLocaStorage) {
             this.produtos = JSON.parse(produtoLocaStorage);
@@ -31,10 +32,17 @@ var lojaCarrinhoCompras = /** @class */ (function () {
             localStorage.setItem("produtoLocaStorage", JSON.stringify(this.produtos));
         }
     };
-    lojaCarrinhoCompras.prototype.atualizar = function (produtos) {
+    LojaCarrinhoCompras.prototype.atualizar = function (produtos) {
         localStorage.setItem("produtoLocaStorage", JSON.stringify(produtos));
     };
-    return lojaCarrinhoCompras;
+    LojaCarrinhoCompras.prototype.temItensCarrinhoCompras = function () {
+        var itens = this.obterProdutos();
+        return (itens.length > 0);
+    };
+    LojaCarrinhoCompras.prototype.LimparCarrinhoCompras = function () {
+        localStorage.setItem("produtoLocaStorage", "");
+    };
+    return LojaCarrinhoCompras;
 }());
-exports.lojaCarrinhoCompras = lojaCarrinhoCompras;
+exports.LojaCarrinhoCompras = LojaCarrinhoCompras;
 //# sourceMappingURL=loja.carrinho.compras.js.map

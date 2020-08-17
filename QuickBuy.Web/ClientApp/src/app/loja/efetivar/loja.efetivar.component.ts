@@ -1,6 +1,11 @@
 import { Component, OnInit } from "@angular/core";
-import { lojaCarrinhoCompras } from "../carrinho-compras/loja.carrinho.compras";
+import { LojaCarrinhoCompras } from "../carrinho-compras/loja.carrinho.compras";
 import { Produto } from "../../modelo/produto";
+import { Pedido } from "../../modelo/pedido";
+import { UsuarioServico } from "../../servicos/usuario/usuario.servico";
+import { ItemPedido } from "../../modelo/itemPedido";
+import { PedidoServico } from "../../servicos/pedido/pedido.servico";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "loja-efetivar",
@@ -9,14 +14,18 @@ import { Produto } from "../../modelo/produto";
 })
 
 export class LojaEfetivarComponent implements OnInit {
-  public carrinhoCompras: lojaCarrinhoCompras;
+  public carrinhoCompras: LojaCarrinhoCompras;
   public produtos: Produto[];
   public total: number;
 
   ngOnInit(): void {
-    this.carrinhoCompras = new lojaCarrinhoCompras();
+    this.carrinhoCompras = new LojaCarrinhoCompras();
     this.produtos = this.carrinhoCompras.obterProdutos();
     this.atualizarTotal();
+  }
+
+  constructor(private usuarioServico: UsuarioServico, private pedidoServico: PedidoServico, private router: Router) {
+
   }
 
   public atualizarPreco(produto: Produto, quantidade: number) {
@@ -40,5 +49,46 @@ export class LojaEfetivarComponent implements OnInit {
 
   public atualizarTotal() {
     this.total = this.produtos.reduce((acc, produto) => acc + produto.preco, 0);
+  }
+
+  public efetivarCompra() {
+    this.pedidoServico.efetivarCompra(this.criarPedido()).subscribe(
+      pedidoId => {
+        console.log(pedidoId);
+        sessionStorage.setItem("pedidoId", pedidoId.toString());
+        this.produtos = [];
+        this.carrinhoCompras.LimparCarrinhoCompras();
+
+        this.router.navigate(["/compra-realizada-sucesso"]);
+      },
+      e => {
+        console.log(e.error);
+      })
+
+  }
+
+  public criarPedido(): Pedido {
+    let pedido = new Pedido();
+    pedido.usuarioId = this.usuarioServico.usuario.id;
+    pedido.cep = "72600111";
+    pedido.cidade = "Sao Paulo";
+    //pedido.dataPedido = new Date();
+    pedido.estado = "Sao Paulo";
+    pedido.dataPrevisaoEntrega = new Date();
+    pedido.formaPagamentoId = 1;
+    pedido.numeroEndereco = "12";
+    pedido.enderecoCompleto = "adfzsdgadfssgfdg";
+
+    this.produtos = this.carrinhoCompras.obterProdutos();
+    for (let produto of this.produtos) {
+      let itemPedido = new ItemPedido();
+      itemPedido.produtoId = produto.id;
+      if (!produto.quantidade) {
+        produto.quantidade = 1;
+      }
+      itemPedido.quantidade = produto.quantidade;
+      pedido.itensPedido.push(itemPedido);
+    }
+    return pedido;
   }
 }
